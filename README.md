@@ -51,10 +51,3 @@ scoreboard-server/    # Node.js/Express backend (simulates live data)
 scoreboard-client/    # React frontend (displays live scores)
 ```
 
-## Add Your Screenshot
-Replace `scoreboard-client/public/screenshot.png` with your app screenshot to display it above.
-
----
-
-## License
-MIT
