@@ -4,7 +4,6 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-
 app.use(cors());
 app.use(express.json());
 
@@ -41,6 +40,45 @@ let gameData = {
   period: 3,
   timeRemaining: "6:42",
   gameStatus: "live" // can be 'scheduled', 'live', 'halftime', 'final'
+};
+
+// Champions League football simulation data
+let footballData = {
+  homeTeam: {
+    name: "Real Madrid",
+    abbreviation: "RMA",
+    score: 1,
+    shotsOnTarget: 3,
+    possession: 54
+  },
+  awayTeam: {
+    name: "Manchester City",
+    abbreviation: "MCI",
+    score: 2,
+    shotsOnTarget: 5,
+    possession: 46
+  },
+  minute: 67,
+  status: "live" // can be 'scheduled', 'live', 'halftime', 'final'
+};
+
+// Tennis match simulation data
+let tennisData = {
+  player1: {
+    name: "Novak Djokovic",
+    country: "SRB",
+    sets: 1,
+    games: 3,
+    points: 15
+  },
+  player2: {
+    name: "Carlos Alcaraz",
+    country: "ESP",
+    sets: 1,
+    games: 4,
+    points: 30
+  },
+  status: "live" // can be 'scheduled', 'live', 'final'
 };
 
 // Function to randomly update the score
@@ -110,13 +148,71 @@ function simulateGameProgress() {
   }
 }
 
+// Simulate football match progress
+function simulateFootballProgress() {
+  if (footballData.status !== 'live') return;
+  // Randomly update score
+  if (Math.random() > 0.8) {
+    const scoringTeam = Math.random() > 0.5 ? 'homeTeam' : 'awayTeam';
+    footballData[scoringTeam].score += 1;
+    footballData[scoringTeam].shotsOnTarget += 1;
+  } else if (Math.random() > 0.5) {
+    // Random shot on target
+    const team = Math.random() > 0.5 ? 'homeTeam' : 'awayTeam';
+    footballData[team].shotsOnTarget += 1;
+  }
+  // Randomly update possession
+  let possession = 50 + Math.floor(Math.random() * 11) - 5;
+  possession = Math.max(40, Math.min(60, possession));
+  footballData.homeTeam.possession = possession;
+  footballData.awayTeam.possession = 100 - possession;
+  // Update minute
+  footballData.minute += Math.floor(Math.random() * 3) + 1;
+  if (footballData.minute >= 90) {
+    footballData.status = 'final';
+    footballData.minute = 90;
+  }
+}
+
+// Simulate tennis match progress
+function simulateTennisProgress() {
+  if (tennisData.status !== 'live') return;
+  // Randomly update points
+  const pointWinner = Math.random() > 0.5 ? 'player1' : 'player2';
+  tennisData[pointWinner].points += 15;
+  if (tennisData[pointWinner].points > 40) {
+    tennisData[pointWinner].games += 1;
+    tennisData[pointWinner].points = 0;
+    tennisData[pointWinner === 'player1' ? 'player2' : 'player1'].points = 0;
+    // Check for set win
+    if (tennisData[pointWinner].games >= 6 && (tennisData[pointWinner].games - tennisData[pointWinner === 'player1' ? 'player2' : 'player1'].games) >= 2) {
+      tennisData[pointWinner].sets += 1;
+      tennisData.player1.games = 0;
+      tennisData.player2.games = 0;
+    }
+    // End match after 3 sets
+    if (tennisData[pointWinner].sets === 3) {
+      tennisData.status = 'final';
+    }
+  }
+}
+
 // Simulate game progress every 3 seconds
 setInterval(simulateGameProgress, 3000);
+setInterval(simulateFootballProgress, 3000);
+setInterval(simulateTennisProgress, 3000);
 
 // API endpoint to get current game data
-
 app.get('/api/game', (req, res) => {
   res.json(gameData);
+});
+
+app.get('/api/football', (req, res) => {
+  res.json(footballData);
+});
+
+app.get('/api/tennis', (req, res) => {
+  res.json(tennisData);
 });
 
 app.get('/api/health', (req, res) => {

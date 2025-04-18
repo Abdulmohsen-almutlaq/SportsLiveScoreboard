@@ -6,14 +6,23 @@ body {
 }
 
 .app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 0;
 }
 
 .app-header {
-  text-align: center;
-  margin-bottom: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  margin-top: 2rem;
 }
 
 .app-header h1 {
@@ -31,4 +40,26 @@ body {
 
 .error {
   color: #d32f2f;
+}
+
+.card-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.card-col {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  .card-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
 }

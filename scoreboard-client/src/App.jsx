@@ -4,18 +4,26 @@ import GameCard from './components/GameCard';
 
 function App() {
   const [gameData, setGameData] = useState(null);
+  const [footballData, setFootballData] = useState(null);
+  const [tennisData, setTennisData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/game');
-        if (!response.ok) {
+        const gameRes = await fetch('http://localhost:4000/api/game');
+        const footballRes = await fetch('http://localhost:4000/api/football');
+        const tennisRes = await fetch('http://localhost:4000/api/tennis');
+        if (!gameRes.ok || !footballRes.ok || !tennisRes.ok) {
           throw new Error('Failed to fetch game data');
         }
-        const data = await response.json();
-        setGameData(data);
+        const game = await gameRes.json();
+        const football = await footballRes.json();
+        const tennis = await tennisRes.json();
+        setGameData(game);
+        setFootballData(football);
+        setTennisData(tennis);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -37,10 +45,14 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>NBA Live Scoreboard</h1>
+        <h1> Sports Live Scoreboard</h1>
       </header>
       <main>
-        {gameData && <GameCard game={gameData} />}
+        <div className="card-row">
+          {gameData && <div className="card-col"><GameCard game={gameData} /></div>}
+          {footballData && <div className="card-col"><GameCard game={footballData} typeofSport="football" /></div>}
+          {tennisData && <div className="card-col"><GameCard game={tennisData} typeofSport="tennis" /></div>}
+        </div>
       </main>
     </div>
   );
